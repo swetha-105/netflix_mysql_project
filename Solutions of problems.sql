@@ -65,74 +65,57 @@ WHERE	FIND_IN_SET('Rajiv Chilaka',REPLACE(director, ',', ','))>0;
 
 SELECT *
 FROM netflix
-WHERE 
-	TYPE = 'TV Show'
-	AND
-	SPLIT_PART(duration, ' ', 1)::INT > 5
-
+WHERE type = 'TV Show'
+  AND CAST(SUBSTRING_INDEX(duration, ' ', 1) AS UNSIGNED) > 5;
 
 -- 9. Count the number of content items in each genre
 
-SELECT 
-	UNNEST(STRING_TO_ARRAY(listed_in, ',')) as genre,
-	COUNT(*) as total_content
+SELECT listed_in, COUNT(*) AS total_content
 FROM netflix
-GROUP BY 1
-
+GROUP BY listed_in;
 
 -- 10. Find each year and the average numbers of content release by India on netflix. 
 -- return top 5 year with highest avg content release !
 
-
 SELECT 
-	country,
-	release_year,
-	COUNT(show_id) as total_release,
-	ROUND(
-		COUNT(show_id)::numeric/
-								(SELECT COUNT(show_id) FROM netflix WHERE country = 'India')::numeric * 100 
-		,2
-		)
-		as avg_release
+    country,
+    release_year,
+    COUNT(show_id) AS total_release,
+    ROUND(
+        (COUNT(show_id) / (SELECT COUNT(show_id) FROM netflix WHERE country = 'India')) * 100, 2
+    ) AS avg_release
 FROM netflix
-WHERE country = 'India' 
-GROUP BY country, 2
-ORDER BY avg_release DESC 
-LIMIT 5
-
+WHERE country = 'India'
+GROUP BY country, release_year
+ORDER BY avg_release DESC
+LIMIT 5;
 
 -- 11. List all movies that are documentaries
-SELECT * FROM netflix
-WHERE listed_in LIKE '%Documentaries'
-
-
+SELECT *
+FROM netflix
+WHERE listed_in LIKE '%Documentaries%';
 
 -- 12. Find all content without a director
-SELECT * FROM netflix
-WHERE director IS NULL
-
-
--- 13. Find how many movies actor 'Salman Khan' appeared in last 10 years!
 
 SELECT * FROM netflix
-WHERE 
-	casts LIKE '%Salman Khan%'
-	AND 
-	release_year > EXTRACT(YEAR FROM CURRENT_DATE) - 10
+WHERE director IS NULL OR director=";
+	
+-- 13. Find how many movies actor 'Salman Khan' appeared in last 10 years
 
+SELECT *
+FROM netflix
+WHERE cast LIKE '%Salman Khan%'
+  AND release_year > YEAR(CURDATE()) - 10;
 
 -- 14. Find the top 10 actors who have appeared in the highest number of movies produced in India.
 
-
-
-SELECT 
-	UNNEST(STRING_TO_ARRAY(casts, ',')) as actor,
-	COUNT(*)
+SELECT cast, COUNT(*) AS appearances
 FROM netflix
 WHERE country = 'India'
-GROUP BY 1
-ORDER BY 2 DESC
-LIMIT 10
+  AND cast IS NOT NULL
+GROUP BY cast
+ORDER BY appearances DESC
+LIMIT 10;
 
 /*
 Question 15:
@@ -141,22 +124,24 @@ the description field. Label content containing these keywords as 'Bad' and all 
 content as 'Good'. Count how many items fall into each category.
 */
 
-
 SELECT 
     category,
-	TYPE,
+    type,
     COUNT(*) AS content_count
 FROM (
-    SELECT 
-		*,
+    SELECT *,
         CASE 
-            WHEN description ILIKE '%kill%' OR description ILIKE '%violence%' THEN 'Bad'
+            WHEN LOWER(description) LIKE '%kill%' OR LOWER(description) LIKE '%violence%' THEN 'Bad'
             ELSE 'Good'
         END AS category
     FROM netflix
 ) AS categorized_content
-GROUP BY 1,2
-ORDER BY 2
+GROUP BY category, type
+ORDER BY type;
+
+-- 16.
+
+	
 
 
 
