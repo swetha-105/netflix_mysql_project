@@ -98,8 +98,8 @@ WHERE listed_in LIKE '%Documentaries%';
 -- 12. Find all content without a director
 
 SELECT * FROM netflix
-WHERE director IS NULL OR director=";
-	
+WHERE director IS NULL;
+
 --13. Find how many movies actor 'Salman Khan' appeared in last 10 years
 
 SELECT *
@@ -129,12 +129,12 @@ SELECT
     type,
     COUNT(*) AS content_count
 FROM (
-    SELECT *,
-        CASE 
-            WHEN LOWER(description) LIKE '%kill%' OR LOWER(description) LIKE '%violence%' THEN 'Bad'
-            ELSE 'Good'
-        END AS category
-    FROM netflix
+ SELECT *,
+    CASE 
+        WHEN LOWER(description) LIKE '%kill%' OR LOWER(description) LIKE '%violence%' THEN 'Bad'
+        ELSE 'Good'
+    END AS category
+FROM netflix
 ) AS categorized_content
 GROUP BY category, type
 ORDER BY type;
