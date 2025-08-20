@@ -19,7 +19,7 @@ The data for this project is sourced from the Kaggle dataset:
 ### . Dataset Link:(Movies Dataset)
 
 ## Schema
-'''sql
+```sql
 CREATE DATABASE netflix_db;
 USE netflix_db;
 CREATE TABLE netflix
@@ -39,5 +39,5 @@ CREATE TABLE netflix
 );
 
 SELECT * FROM netflix;
-'''
+```
 
