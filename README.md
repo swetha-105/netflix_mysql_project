@@ -118,8 +118,7 @@ SELECT listed_in, COUNT(*) AS total_content
 FROM netflix
 GROUP BY listed_in;
 ```
-### 10. Find each year and the average numbers of content release by India on netflix. 
-+ return top 5 year with highest avg content release !
+### 10. Find each year and the average numbers of content release by India on netflix.Return top 5 year with highest avg content release !
 ```sql
 SELECT 
     country,
