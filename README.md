@@ -39,5 +39,5 @@ CREATE TABLE netflix
 );
 
 SELECT * FROM netflix;
-'''sql
+'''
 
