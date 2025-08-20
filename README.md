@@ -16,4 +16,7 @@ Explore and categorize content based on specific criteria and keywords.
 ## Dataset
 
 The data for this project is sourced from the Kaggle dataset:
-### . Dataset Link:(https://github.com/swetha-105/netflix_mysql_project/edit/main/Netflix_titles)
+### . Dataset Link:(Movies Dataset)
+
+## Schema
+
