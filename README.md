@@ -2,4 +2,4 @@
 
 ![Netflix_logo](https://github.com/swetha-105/netflix_mysql_project/blob/main/netflix_logo.jpg)
 
-##Objective
+## Objective
