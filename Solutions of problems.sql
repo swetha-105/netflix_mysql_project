@@ -139,7 +139,31 @@ FROM netflix
 GROUP BY category, type
 ORDER BY type;
 
--- 16.
+-- 16.List oldest movies on netflix.
+
+SELECT title, release_year
+FROM netflix
+WHERE type = 'Movie'
+ORDER BY release_year ASC
+LIMIT 10;
+
+--17.Titles containing specific keyword "Love".
+
+SELECT title, type, release_year
+FROM netflix
+WHERE title LIKE '%Love%'
+ORDER BY release_year DESC;
+
+--18.List top 5 countries producing TV shows vs Movies.
+
+SELECT country, type, COUNT(*) AS total
+FROM netflix
+WHERE country IS NOT NULL
+GROUP BY country, type
+ORDER BY total DESC
+LIMIT 15;
+
+
 
 	
 
