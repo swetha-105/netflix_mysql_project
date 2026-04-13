@@ -50,137 +50,118 @@ FROM netflix
 GROUP BY type;
 ```
 
-### 2. Find the most common rating for movies and TV shows
+### 2.Find the total number of content items for each rating within each content type and sort them by highest count.
 ```sql
-    SELECT 
-        type,rating
-      FROM(
-      SELECT
-      type,rating,
-        COUNT(*) AS rating_count,
-      RANK() OVER (PARTITION BY type ORDER BY COUNT(*) DESC) AS rnk
-    FROM netflix
-    GROUP BY type, rating
-) AS ranked WHERE rnk=1;
+SELECT type, rating, COUNT(*) AS total
+FROM netflix
+GROUP BY type, rating
+ORDER BY type, total DESC;
 ```
-### 3. List all movies released in a specific year (e.g., 2020)
+### 3. Retrieve all content released in the year 2020 from the Netflix dataset.
 ```sql
 SELECT * 
 FROM netflix
 WHERE release_year = 2020;
 ```
 
-### 4. Find the top 5 countries with the most content on Netflix
+### 4.Retrieve the top 5 countries with the highest number of content items in the dataset.
 ```sql
-	SELECT 
-		 country,
-		COUNT(*) AS total_content
-	FROM netflix
+SELECT country, COUNT(*) AS total
+FROM netflix
 WHERE country IS NOT NULL
 GROUP BY country
-ORDER BY total_content DESC
+ORDER BY total DESC
 LIMIT 5;
 ```
-### 5. Identify the longest movie
+### 5. Find the movie with the maximum duration from the dataset.
 ```sql
-SELECT *
+SELECT title, duration
 FROM netflix
 WHERE type = 'Movie'
-ORDER BY CAST(SUBSTRING_INDEX(duration, ' ', 1)AS UNSIGNED) DESC
+ORDER BY CAST(SUBSTRING_INDEX(duration, ' ', 1) AS UNSIGNED) DESC
 LIMIT 1;
 ```
 
-### 6. Find content added in the last 5 years
-```sql
-SELECT
-*
-FROM netflix
-WHERE STR_TO_DATE(date_added, '%M %d, %Y') >= DATE_SUB(CURDATE(), - INTERVAL 5 YEAR);
-```
-
-### 7. Find all the movies/TV shows by director 'Rajiv Chilaka'!
+### 6. Retrieve all content that was added to Netflix in the last 5 years.
 ```sql
 SELECT *
 FROM netflix
-WHERE	FIND_IN_SET('Rajiv Chilaka',REPLACE(director, ',', ','))>0;
+WHERE date_added >= CURDATE() - INTERVAL 5 YEAR;
 ```
-### 8. List all TV shows with more than 5 seasons
+
+### 7. Retrieve all content directed by 'Rajiv Chilaka' from the dataset.
+```sql
+SELECT *
+FROM netflix
+WHERE director LIKE '%Rajiv Chilaka%';
+```
+### 8. Retrieve all TV shows that have more than 5 seasons.
 ```sql
 SELECT *
 FROM netflix
 WHERE type = 'TV Show'
-  AND CAST(SUBSTRING_INDEX(duration, ' ', 1) AS UNSIGNED) > 5;
+AND CAST(SUBSTRING_INDEX(duration, ' ', 1) AS UNSIGNED) > 5;
 ```
-### 9. Count the number of content items in each genre
+### 9. Count the number of content items in each genre category as listed in the dataset.
 ```sql
 SELECT listed_in, COUNT(*) AS total_content
 FROM netflix
 GROUP BY listed_in;
 ```
-### 10. Find each year and the average numbers of content release by India on netflix.Return top 5 year with highest avg content release !
+### 10. Find the number of content items released each year in India and return the top 5 years with the highest count.
 ```sql
-SELECT 
-    country,
-    release_year,
-    COUNT(show_id) AS total_release,
-    ROUND(
-        (COUNT(show_id) / (SELECT COUNT(show_id) FROM netflix WHERE country = 'India')) * 100, 2
-    ) AS avg_release
+SELECT release_year, COUNT(*) AS total
 FROM netflix
 WHERE country = 'India'
-GROUP BY country, release_year
-ORDER BY avg_release DESC
+GROUP BY release_year
+ORDER BY total DESC
 LIMIT 5;
 ```
 
-### 11. List all movies that are documentaries
+### 11. Retrieve all content that belongs to the ‘Documentaries’ category.
 ```sql
 SELECT *
 FROM netflix
 WHERE listed_in LIKE '%Documentaries%';
 ```
 
-### 12. Find all content without a director
+### 12. Retrieve all content that does not have a director specified.
 ```sql
-SELECT * FROM netflix
+SELECT * 
+FROM netflix
 WHERE director IS NULL;
 ```
-### 13. Find how many movies actor 'Salman Khan' appeared in last 10 years
+### 13. Find the total number of movies featuring actor ‘Salman Khan’ released in the last 10 years.
 ```sql
-SELECT *
+SELECT COUNT(*) AS total_movies
 FROM netflix
-WHERE cast LIKE '%Salman Khan%'
-  AND release_year > YEAR(CURDATE()) - 10;
+WHERE casts LIKE '%Salman Khan%'
+AND type = 'Movie'
+AND release_year >= YEAR(CURDATE()) - 10;
 ```
-### 14. Find the top 10 actors who have appeared in the highest number of movies produced in India.
+### 14. Find the top 10 cast entries with the highest number of content items produced in India.
 ```sql
-SELECT cast, COUNT(*) AS appearances
+SELECT casts, COUNT(*) AS total
 FROM netflix
 WHERE country = 'India'
-  AND cast IS NOT NULL
-GROUP BY cast
-ORDER BY appearances DESC
+AND casts IS NOT NULL
+GROUP BY casts
+ORDER BY total DESC
 LIMIT 10;
 ```
-### 15. Categorize the content based on the presence of the keywords 'kill' and 'violence' in the description field. Label content containing these keywords as'Bad' and all other content as 'Good'. Count how many items fall into each category.
+### 15. Classify content as ‘Bad’ or ‘Good’ based on keywords in the description and count the number of items in each category.
 ```sql
 SELECT 
-    category,
-    type,
-    COUNT(*) AS content_count
-FROM (
- SELECT *,
-    CASE 
-        WHEN LOWER(description) LIKE '%kill%' OR LOWER(description) LIKE '%violence%' THEN 'Bad'
-        ELSE 'Good'
-    END AS category
+CASE 
+    WHEN description LIKE '%kill%' OR description LIKE '%violence%' THEN 'Bad'
+    ELSE 'Good'
+END AS category,
+COUNT(*) AS total
 FROM netflix
-) AS categorized_content
-GROUP BY category, type
-ORDER BY type;
+GROUP BY category;
 ```
 
-### 16.List oldest movies on netflix.
+### 16.Retrieve the top 10 oldest movies based on release year from the dataset.
 ```sql
 SELECT title, release_year
 FROM netflix
@@ -188,21 +169,20 @@ WHERE type = 'Movie'
 ORDER BY release_year ASC
 LIMIT 10;
 ```
-### 17.Titles containing specific keyword "Love".
+### 17.Retrieve all content titles that contain the keyword ‘Love’.
 ```sql
 SELECT title, type, release_year
 FROM netflix
-WHERE title LIKE '%Love%'
-ORDER BY release_year DESC;
+WHERE title LIKE '%Love%';
 ```
-### 18.List top 5 countries producing TV shows vs Movies.
+### 18.Retrieve the number of content items for each country and content type, and display the top results based on count.
 ```sql
 SELECT country, type, COUNT(*) AS total
 FROM netflix
 WHERE country IS NOT NULL
 GROUP BY country, type
 ORDER BY total DESC
-LIMIT 15;
+LIMIT 10;
 ```
 
 ## Findings and Conclusion
