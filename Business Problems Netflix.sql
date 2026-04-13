@@ -2,7 +2,7 @@
 
 1. Count the number of Movies vs TV Shows
 2. Find the total number of content items for each rating within each content type and sort them by highest count.
-3. List all movies released in a specific year (e.g., 2020)
+3.  Retrieve all content released in the year 2020 from the Netflix dataset.
 4. Find the top 5 countries with the most content on Netflix
 5. Identify the longest movie
 6. Find content added in the last 5 years
