@@ -10,16 +10,10 @@ GROUP BY type;
 
 -- 2. Find the most common rating for movies and TV shows
 
-    SELECT 
-        type,rating
-      FROM(
-      SELECT
-      type,rating,
-        COUNT(*) AS rating_count,
-      RANK() OVER (PARTITION BY type ORDER BY COUNT(*) DESC) AS rnk
-    FROM netflix
-    GROUP BY type, rating
-) AS ranked WHERE rnk=1;
+   SELECT type, rating, COUNT(*) AS total
+FROM netflix
+GROUP BY type, rating
+ORDER BY type, total DESC;
 
 -- 3. List all movies released in a specific year (e.g., 2020)
 
@@ -30,21 +24,19 @@ WHERE release_year = 2020;
 
 -- 4. Find the top 5 countries with the most content on Netflix
 
-	SELECT 
-		 country,
-		COUNT(*) AS total_content
-	FROM netflix
+SELECT country, COUNT(*) AS total
+FROM netflix
 WHERE country IS NOT NULL
 GROUP BY country
-ORDER BY total_content DESC
+ORDER BY total DESC
 LIMIT 5;
 
 -- 5. Identify the longest movie
 
-SELECT *
+SELECT title, duration
 FROM netflix
 WHERE type = 'Movie'
-ORDER BY CAST(SUBSTRING_INDEX(duration, ' ', 1)AS UNSIGNED) DESC
+ORDER BY duration DESC
 LIMIT 1;
 
 
