@@ -45,9 +45,7 @@ SELECT * FROM netflix;
 ## Business problems and Solutions
 ### 1.Count the number of Movies vs TV Shows
 ```sql
-SELECT 
-	type,
-	COUNT(*) AS total
+SELECT type, COUNT(*) AS total
 FROM netflix
 GROUP BY type;
 ```
